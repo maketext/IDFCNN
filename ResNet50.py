@@ -67,7 +67,6 @@ class MainBL(nn.Module):
         super(MainBL, self).__init__() #224
         self.conv7x7 = conv7x7(3, 64)
         self.mp = nn.MaxPool2d(3, stride=2)
-        self.basicBL1 = BasicBL(64, 256, st=1)
         initialize_weights(self)
 
     def forward(self, x):
