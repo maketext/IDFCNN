@@ -71,6 +71,9 @@ class MainBL(nn.Module):
 
     def forward(self, x):
         out = x
+        out = self.conv7x7(out)
+        out = self.mp(out)
+        
         N  = [3, 4, 6, 3]
         ST = [[2, 1, 1], [2, 1, 1, 1], [2, 1, 1, 1, 1, 1], [2, 1, 1]]
         SE = [dict(st=64, ed=256), dict(st=256, ed=512), dict(st=512, ed=1024), dict(st=1024, ed=2048)]
