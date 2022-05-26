@@ -1,6 +1,6 @@
 (다음주 까지 그림과 소스코드를 추가할 예정입니다.)
 
-# IDFCNN 
+# I'm Different From you CNN 
 
 ## 모델 설계 방향
 
