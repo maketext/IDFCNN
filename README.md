@@ -6,15 +6,15 @@
 
 - 모델에 원본 이미지를 지속적으로 주입
 
-![원본 이미지 주입](https://user-images.githubusercontent.com/32004044/170392801-e54c71a8-4750-4d17-985e-58c5970fc755.jpg)
-![원본 이미지 주입 2](https://user-images.githubusercontent.com/32004044/170392795-76002a87-6d6b-4c8f-98ce-901912fff8ff.jpg)
-
   - 모델의 초기 부분에 원본 이미지 값을 추가적으로 주입하고 뉴런 간 밀집도를 Sparse 하게 구성
 
   - 이후 원본 이미지를 메인 모델에 지속적으로 주입
   
   - 모델 마지막 부분에도 원본 이미지 주입
-  
+
+  ![원본 이미지 주입](https://user-images.githubusercontent.com/32004044/170392801-e54c71a8-4750-4d17-985e-58c5970fc755.jpg)
+  ![원본 이미지 주입 2](https://user-images.githubusercontent.com/32004044/170392795-76002a87-6d6b-4c8f-98ce-901912fff8ff.jpg)
+
   - 비전 트랜스포머의 기본 아이디어에서 영감을 얻음
   
   - XY 평면 차원수를 맞추기 위해 단순 0.x 업 샘플링 (바이큐빅 인터폴레이션)을 적용
