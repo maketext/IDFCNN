@@ -6,6 +6,9 @@
 
 - 모델에 원본 이미지를 지속적으로 주입
 
+![원본 이미지 주입](https://user-images.githubusercontent.com/32004044/170392801-e54c71a8-4750-4d17-985e-58c5970fc755.jpg)
+![원본 이미지 주입 2](https://user-images.githubusercontent.com/32004044/170392795-76002a87-6d6b-4c8f-98ce-901912fff8ff.jpg)
+
   - 모델의 초기 부분에 원본 이미지 값을 추가적으로 주입하고 뉴런 간 밀집도를 Sparse 하게 구성
 
   - 이후 원본 이미지를 메인 모델에 지속적으로 주입
@@ -27,6 +30,8 @@
   - 가우시안 개념이 적용된 서브스트림을 구성 후 메인 스트림에 통합
   
   - NN 또는 행렬 곱 개념이 적용된 Densely 서브스트림을 구성 후 메인 스트림에 통합
+  
+  ![병렬스트림](https://user-images.githubusercontent.com/32004044/170392920-e9897a89-e6ae-43ea-a985-8217e7c08d84.jpg)
 
 - 퓨전시 CAT 방식으로 적용
 
