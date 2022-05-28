@@ -92,3 +92,12 @@ Conv 1x1에 스트라이드를 2로 적용할 수도 있습니다. 하지만 보
 에 도달하였고 이를 Flat 화 하여 차원 수를 (배치 사이즈, 28x28x24) 로 2차원으로 조정한 후 NN 층 (FC 층) 을 적용합니다.
 
 ![모델 설계 2](https://user-images.githubusercontent.com/32004044/170392428-fccc6482-042e-4866-ba66-57bcf043d6c9.jpg)
+
+## License
+IDFCNN is released under the Apache 2.0 license. Please see the LICENSE file for more information.
+
+Copyright (c) Many Stallings. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use these files except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
