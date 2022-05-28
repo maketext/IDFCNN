@@ -2,6 +2,20 @@
 
 # I'm Different From you CNN 
 
+## 양품, 비품 판정 사진
+
+- 이차전지 버스바 부품 모형 불량 판정 모습
+![최종-bad](https://user-images.githubusercontent.com/32004044/170803342-fb49e4b5-73ab-411a-934b-e8f1203585bf.png)
+
+- 시멘틱 세그먼테이션으로 타겟 Crop 후 5x5 패치별 판정 모습
+- 각 패치는 56x56
+![라네즈](https://user-images.githubusercontent.com/32004044/170803493-060366f2-7193-428d-b08b-85c2b46a2ffa.png)
+
+
+## DNN 파이프라인
+
+![Frame 1](https://user-images.githubusercontent.com/32004044/170803562-7fc4b895-c7eb-430c-bb6c-df5b876d3cff.png)
+
 ## 모델 설계 방향
 
 - 모델에 원본 이미지를 지속적으로 주입
