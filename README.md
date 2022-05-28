@@ -1,3 +1,5 @@
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fmaketext%2FIDFCNN&count_bg=%233D76C8&title_bg=%23000000&icon=&icon_color=%23000000&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
+
 (다음주 까지 그림과 소스코드를 추가할 예정입니다.)
 
 # I'm Different From you CNN 
