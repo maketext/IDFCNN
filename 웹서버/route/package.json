@@ -1,0 +1,32 @@
+{
+  "name": "deep01",
+  "version": "1.0.0",
+  "dependencies": {
+    "mqtt": "^4.3.4",
+    "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
+    "connect-flash": "^0.1.1",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "fast-levenshtein": "^3.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.20",
+    "mariadb": "^2.4.2",
+    "multer": "^1.4.2",
+    "mysql2": "^2.1.0",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
+    "path": "^0.12.7",
+    "pug": "^2.0.4",
+    "sequelize": "^5.21.6",
+    "sf": "^0.2.0",
+    "pure-md5": "^0.1.13",
+    "dayjs": "^1.10.4"
+  },
+  "description": "test",
+  "main": "main.js",
+  "author": "Chang Ho Lee",
+  "license": "MIT",
+  "devDependencies": {}
+}

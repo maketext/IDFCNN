@@ -1,0 +1,339 @@
+doctype html
+html()
+  head
+    meta(charset='utf-8')
+    script(type='text/javascript', src="/js/vue2611.js")
+    script(type='text/javascript', src="/js/buefy.js")
+    script(type='text/javascript', src="/js/axios.js")
+    //script(type='text/javascript', src="/js/babel.js")
+    script(src="/js/mqttClient.js" type="text/javascript")
+
+    link(rel='stylesheet', href='/css/buefy.css')
+    link(rel='stylesheet', href='/css/main.css')
+
+    title 인터페이스 클라이언트
+
+body()
+  div
+    #app(style="margin-top:1em;")
+      .tile.is-vertical(v-if="isMqtt")
+        .tile
+          .tile.is-2.is-vertical(style="padding-top:calc(5em + 24px);")
+            b-button.flat(@click="pub('/img-stop');pub('/img-start')" style="width:100%;") 스트리밍 시작
+            b-button.flat(@click="pub('/img-stop')" style="width:100%;") 스트리밍 중지
+            b-button.flat(@click="pub('/cam-release')" style="width:100%;") 카메라 객체 반환
+            hr
+            b-button.flat(active @click="pub('/img-stop');pub('/start')" style="width:100%;") 판정
+            hr
+            b-button.flat(v-if="lbl['학습시작'] == '학습시작'" type="is-danger" outlined @click="fnTrain" style="width:100%;") 학습시작
+            b-button.flat(v-else type="is-danger" disabled style="width:100%;") 기다려주십시오.
+            b-button.flat(v-if="lbl['초기화'] == '초기화'" active @click="lbl['초기화'] = '기다려주십시오.';pub('/start-train-weight-init')" style="width:100%;") 가중치 초기화
+            b-button.flat(v-else disabled style="width:100%;") 기다려주십시오.
+            b-button.flat(v-if="!q" active @click="q = true" style="width:100%;") 일시중지
+            b-button.flat(v-if="q" active @click="q = false;pub('/start-train-1')" style="width:100%;") 다시시작
+            b-button.flat(active @click="pub('/start-train-save')" style="width:100%;margin-top:2em;") 학습결과를 model2BboxYOLO.dat 파일에 저장
+            b-button.flat(active @click="pub('/q')" style="width:100%;") 종료
+
+          .tile.is-vertical(style="margin:1em;margin-top:0;")
+            b-message(:type="typeMsg" style="width:calc(100% - 2em);")
+              h1 {{makeStatus}}
+            .tile.is-vertical(v-if="status == '학습중'")
+              b-field(label="학습창" label-position="on-border" style="width: 70vw;flex:1;height:70vh;")
+                b-input(maxlength="150000" type="textarea" v-model="msg" style="height:inherit;")
+            .tile.is-vertical(v-else-if="status != '비품' && status != '양품'")
+              .tile(style="height: 75vh;")
+                b-image(:src='urlCam' rounded="true")
+                b-button(style="margin:2em;position:absolute;border:3px solid white;") 카메라 실시간
+            .tile.is-vertical(v-else)
+              .tile(v-if="status == '비품'")
+                .tile(style="height: 100%;")
+                  b-image(:src='urlResultBad')
+              .tile(v-if="status == '양품'")
+                .tile(style="height: 100%;")
+                  b-image(:src='urlResultGood')
+        .tile.is-vertical.p(style="border-top:1px solid gray;")
+          span.m-auto.
+            This project is dual licensed under the Eclipse Public License 2.0 and the
+          span.m-auto Eclipse Distribution License 1.0 as described in the 
+            a(href="/epl-v20").
+              epl-v20
+            span(style="display:inline-block;width:0.25em;")
+            span.
+              and 
+            a(href="/edl-v10").
+              edl-v10 
+            span.
+              files.
+      .tile.h100(v-else style="background-color: #8DA9FF;flex-direction: column;margin:0.5em;margin-top:-0.5em;")
+        div.m-auto
+          span.em10
+            .
+              연결중{{connCnt}}
+
+script(type="text/javascript").
+  let baseURL = "#{axiosAddr}"
+  let client
+  function log(str) {
+    console.log(str)
+  }
+  function thread(f) {
+    setInterval(f, 3000)
+  }
+  function post(url, param, callback1, callback2) {
+      axios.post(url, param)
+      .then(function (res) {
+          //log("HTTP PATCH 응답 res.data=" + JSON.stringify(res.data))
+          callback1(res.data)
+      })
+      .catch(function (err) {
+        callback2(err)
+      })
+  }
+  function http(param) {
+      let posts = []
+      for(e of param)
+          posts.push(post(e.uri, e.g, e.cb))
+      Promise.allSync = function(i) {
+          if(i >= post.length)
+              return
+          if(typeof posts[i] == 'function')
+              posts[i]().then(() => {
+                  Promise.allSync(i+1)
+              })
+      }
+      Promise.allSync(0)
+
+  }
+
+  let v = new Vue({
+      el: '#app',
+      components: {
+      },
+      data: {
+        isMqtt: false,
+        connCnt: '',
+        time: '',
+        blue: '',
+        topic: 'makepatch-done',
+        msg: '',
+        msgList: [],
+        isFinished: false,
+        status: '',
+        typeMsg: 'is-info',
+        q: false,
+        lbl: {'초기화':'초기화', '학습시작':'학습시작'}
+      },
+      methods: {
+        pub: function(topic) {
+          post('/isConsoleReady', null, (res) => {
+            let message = new Paho.MQTT.Message(".")
+            message.destinationName = topic
+            if(client)
+              client.send(message)
+          }, (err) => {
+              v.status = 'EXE 파일을 로딩 중입니다. 기다려주십시오.'
+          })
+        },
+        fnTrain: function() {
+          if(this.q)
+          {
+            console.log("하하하")
+            this.q = false
+            this.pub('/start-train-1')
+          }
+          else
+          {
+            this.lbl['학습시작'] = '기다려주십시오.'
+            this.pub('/start-train-1')
+          }
+        }
+      },
+      computed: {
+        urlCam: function() {
+          return `/img/웹캠?t=${this.time}`
+        },
+        makeStatus: function() {
+          switch(this.topic.replace('1', ''))
+          {
+            case '/img-start':
+              this.status = '영상 취득 준비중'
+              this.typeMsg = 'is-bad'
+              break
+            case '/img-stop':
+              this.status = '영상 취득 종료'
+              this.typeMsg = 'is-info'
+              break
+            case '/img-recv':
+              this.status = '영상 취득중'
+              this.typeMsg = 'is-good'
+              break
+            case "/start":
+              this.status = '영상 패치화중'
+              break
+            case "/makepatch-done":
+              this.status = '영상 판독중'
+              break
+            case "/bad":
+              this.status = '비품'
+              this.typeMsg = 'is-bad'
+              break
+            case "/good":
+              this.status = '양품'
+              this.typeMsg = 'is-good'
+              break
+            case "/on-train":
+            case "/on-makebox-0":
+            case "/on-makebox-1":
+            case "/on-makebox-2":
+            case "/on-makebox-3":
+            case "/on-start-train-init-finish":
+              this.status = '학습중'
+              break
+            case "/on-start-train-init":
+              this.status = '새로운 학습을 위해 가중치가 초기화됨.'
+              v.msgList = []
+              this.trainBtnLbl = '학습시작'
+              break
+            case "/q":
+              this.status = '파이썬 실행 파일이 종료됨.'
+          }
+          if(!this.status)
+            return '표시할 알림 없음.'
+          return this.status
+        },
+        urlResultBad: function() {
+          return `/img/최종-bad?t=${this.time}`
+        },
+        urlResultGood: function() {
+          return `/img/최종-good?t=${this.time}`
+        }
+      },
+      created()
+      {
+        //log(this.src) ok
+      },
+      mounted()
+      {
+        //log(this.src) ok
+        //thread(() => { v.time = new Date().getTime() })
+
+
+        // Create a client instance
+        client = new Paho.MQTT.Client(baseURL, 9001, "web-client");
+
+        // set callback handlers
+        client.onConnectionLost = (responseObject) => {
+          console.log("onConnectionLost:"+responseObject.errorCode)
+          if (responseObject.errorCode !== 8) {
+            location.href = "error"
+          }
+        }
+        client.onMessageArrived = function(message) {
+          //log(`onMessageArrived:${message.payloadString}`)
+          //log(`onMessageArrived:${message.destinationName}`)
+
+          let [topic, payload] = [message.destinationName, message.payloadString]
+          v.topic = topic
+
+          if(payload != '.' && payload != '')
+          {
+            v.msgList.push(payload)
+            if(payload.endsWith('모델 가중치 저장됨. saved.'))
+            {
+              v.msgList.pop()
+              v.msgList = [v.msgList.pop()]
+              v.msgList.push(payload)
+            }
+            v.msg = v.msgList.join('\r\n')
+            v.$nextTick(() => {
+              let textarea = document.getElementsByTagName('textarea')
+              textarea[0].scrollTop = textarea[0].scrollHeight
+            })
+          }
+
+          switch(topic)
+          {
+            case '/img-recv':
+            case '/bad':
+            case '/good':
+            {
+              v.time = new Date().getTime()
+              break
+            }
+            case '/q':
+            {
+              v.msg = '배치파일 종료'
+              break
+            }
+            case '/on-start-train-init-finish':
+            {
+              v.lbl['초기화'] = '초기화'
+              v.lbl['학습시작'] = '학습시작'
+              break
+            }
+            case '/on-start-train-weight-init':
+            {
+              break
+            }
+            case '/on-train':
+            {
+              v.lbl['학습시작'] = '학습시작'
+              if(v.q) break
+              if(payload.startsWith('ep='))
+                v.pub('/start-train-1')
+              break
+            }
+            default: 
+            {
+              break
+            }
+          }
+
+          //v.$forceUpdate()
+        }
+
+        setInterval(() => {
+          if(v.connCnt == '...')
+            v.connCnt = ''
+          v.connCnt = v.connCnt + '.'
+        }, 1000)
+
+        // connect the client
+        client.connect({
+          onSuccess:() => {
+            v.isMqtt = true
+            lostCount = 0
+            client.subscribe("/img-start")
+            client.subscribe("/img-recv")
+            client.subscribe("/img-stop")
+            client.subscribe("/start")
+            client.subscribe("/makepatch-done")
+            client.subscribe("/bad")
+            client.subscribe("/good")
+            client.subscribe("/on-train")
+            client.subscribe("/on-start-train-init")
+            client.subscribe("/on-start-train-weight-init")
+            client.subscribe("/on-start-train-init-finish")
+            client.subscribe("/on-makebox-0")
+            client.subscribe("/on-makebox-1")
+            client.subscribe("/on-makebox-2")
+            client.subscribe("/on-makebox-3")
+            client.subscribe("/q")
+
+          }, onFailure:() => {
+            location.href = "error"
+          }, timeout:3
+        })
+
+      }
+  })
+
+
+
+
+
+
+
+
+
+
