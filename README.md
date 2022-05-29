@@ -11,7 +11,6 @@
 - 각 패치는 56x56
 ![라네즈](https://user-images.githubusercontent.com/32004044/170803493-060366f2-7193-428d-b08b-85c2b46a2ffa.png)
 
-
 ## DNN 파이프라인
 
 ![Frame 1](https://user-images.githubusercontent.com/32004044/170803562-7fc4b895-c7eb-430c-bb6c-df5b876d3cff.png)
@@ -90,6 +89,50 @@ Conv 1x1에 스트라이드를 2로 적용할 수도 있습니다. 하지만 보
 에 도달하였고 이를 Flat 화 하여 차원 수를 (배치 사이즈, 28x28x24) 로 2차원으로 조정한 후 NN 층 (FC 층) 을 적용합니다.
 
 ![모델 설계 2](https://user-images.githubusercontent.com/32004044/170392428-fccc6482-042e-4866-ba66-57bcf043d6c9.jpg)
+
+## 양품, 비품 데이터셋 생성 방법
+
+  {ProjectRoot}/img/원-배치-태스크/불량데이터/0
+  {ProjectRoot}/img/원-배치-태스크/불량데이터/1
+  {ProjectRoot}/img/원-배치-태스크/불량데이터/2
+  {ProjectRoot}/img/원-배치-태스크/불량데이터/3
+  {ProjectRoot}/img/원-배치-태스크/불량데이터/배경
+
+총 5개의 폴더가 있습니다. 그 중 '0' 폴더에는 양품 패치 이미지 정보를 저장해야 하고 나머지 '1', '2', '3' 폴더에는 각 불량 유형별로 정리하여 저장하면 됩니다. 이미지 저장시 원본 패치인 u1.jpg, u2.jpg... 파일명과 비품을 판정하는 근거가 되는 부분을 굵기 약 10pt인 빨강 (255, 0, 0) 직사각형을 칠한 m1.jpg, m2.jpg... 파일명으로 구분하여 저장합니다. 
+
+패치 이미지 파일은 웹 클라이언트 주소 http://localhost:8888/index 에서 취득합니다. 웹을 구동하기 위해 프로젝트 루트의 "배치.bat" 파일을 실행합니다. 그리고 웹 클라이언트 주소로 접속합니다.
+
+![스크린샷](캡쳐1.jpg)
+
+"스트리밍 시작"을 클릭하여 이미지를 캡쳐 후 "스트리밍 중지" 버튼을 클릭합니다. 그리고 "판정" 버튼 클릭하면 원본 이미지가 패치화 되는데 이때 model2BboxYOLO.dat 파일이 꼭 프로젝트 루트에 있어야 합니다. DAT 파일은 학습된 뉴런 가중치 값들을 저장하고 있는 pytorch용 파일입니다. 클라우드로 공유합니다.
+
+|OneDrive|
+|--------|
+|https://manystallingscom-my.sharepoint.com/:u:/g/personal/maketext_manystallings_com/EZUosP2KamtIiUEAEGKoBUkBO1Hikda9Y4gS2LSykqwvkg?e=gA02IM|
+
+원본 이미지가 패치화 되면 18개의 패치이미지가 이 경로상에 생성됩니다.
+
+  {ProjectRoot}/img/원-배치-태스크/유효패치-판정
+
+'\[idx0]\[0rad]0.0.jpg', '\[idx0]\[0rad]0.1.jpg'... 이미지들을 데이터셋으로 활용하시면 됩니다.
+
+이때 웹캠은 가급적 가로-세로 비가 정사각형에 가까운 큐센 QSENN QC4K 웹캠 http://prod.danawa.com/info/?pcode=12332438 이나 해상도 2048x2448 등의 정사각 에스펙트 레이시오와 비슷한 머신비전 카메라 (오므론, 필라 등) 를 사용하시면 좋겠습니다.
+
+## 학습 방법
+
+"가중치 초기화" 버튼을 먼저 누릅니다.
+
+![스크린샷](캡쳐2.jpg)
+
+"생성완료. 학습을 시작하세요." 문구가 창에 뜨면 "학습시작" 버튼을 눌러 학습을 시작합니다. 
+
+![스크린샷](캡쳐3.jpg)
+
+학습 도중 "일시중지" 버튼을 한 번 클릭하면 언제든 멈출 수 있고 한 번 더 클릭하면 재개할 수도 있습니다.
+
+![스크린샷](캡쳐3-1.jpg)
+
+학습이 잘 진행되었다고 판단이 되면 "학습결과를 model2BboxYOLO.dat 파일에 저장" 버튼을 클릭합니다. 학습이 끝났습니다. 
 
 ## License
 IDFCNN is released under the Apache 2.0 license. Please see the LICENSE file for more information.
